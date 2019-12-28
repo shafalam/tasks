@@ -8,6 +8,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
+import TextField from '@material-ui/core/TextField';
+
+
+// import custom components 
+import MultilineTextFields from "./TextArea"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,6 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function CheckboxList() {
   const classes = useStyles();
   const [checked, setChecked] = React.useState([0]);
+  const [edit, setEdit] = React.useState(false);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
@@ -36,13 +42,22 @@ export default function CheckboxList() {
     setChecked(newChecked);
   };
 
+  const handleEdit = (num: number) => {
+    setEdit(!edit);
+    console.log("each list is clicked" + edit + num);
+  }
+
+  
+
   return (
-    <List className={classes.root}>
-      {[0, 1, 2, 3].map(value => {
+    <div>
+      {edit ? <MultilineTextFields /> : null}
+      <List className={classes.root}>
+      {[0, 1, 2, 3, 4].map(value => {
         const labelId = `checkbox-list-label-${value}`;
 
         return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+          <ListItem key={value} role={undefined} dense button>
             <ListItemIcon>
               <Checkbox
                 edge="start"
@@ -50,17 +65,20 @@ export default function CheckboxList() {
                 tabIndex={-1}
                 disableRipple
                 inputProps={{ 'aria-labelledby': labelId }}
+                onClick={handleToggle(value)}
               />
             </ListItemIcon>
             <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
             <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="comments">
+              <IconButton edge="end" aria-label="comments" onClick={() => handleEdit(value)}>
                 <CommentIcon />
-              </IconButton>
+              </IconButton >
             </ListItemSecondaryAction>
           </ListItem>
         );
       })}
     </List>
+    </div>
+    
   );
 }
