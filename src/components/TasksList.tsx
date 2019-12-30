@@ -10,6 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
 import TextField from '@material-ui/core/TextField';
 
+// icon import
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 // import custom components 
 import MultilineTextFields from "./TextArea"
@@ -26,51 +28,68 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function CheckboxList() {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([0]);
-  const [edit, setEdit] = React.useState(false);
+  const aTask:string[] = [];
+  const [task, setTask] = React.useState(aTask);
+  let initialEdit: boolean[] = [];
+  const [edit, setEdit] = React.useState(initialEdit);
+  let initialTask: boolean[] = [];
+  const [taskCheck, setTaskCheck] = React.useState(initialTask);
 
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
+  const handleToggle = (index: number) => () => {
+    const editedTask = [...taskCheck];
+    const taskStatus = editedTask[index];
+    editedTask[index] = !taskStatus;
+    setTaskCheck(editedTask);
   };
 
   const handleEdit = (num: number) => {
-    setEdit(!edit);
+    const initialEditStatus = edit[num];
     console.log("each list is clicked" + edit + num);
   }
 
-  
+  const addTaskHandler = () => {
+    console.log("task added");
+    const newTask: boolean = false;
+    const immutableTask = [...taskCheck];
+    immutableTask.push(newTask);
+    setTaskCheck(immutableTask);
+    const newEdit: boolean = false;
+    const immutableEdit = [...edit];
+    immutableEdit.push(newEdit);
+    setEdit(immutableEdit);
+  }
 
+  const editText = taskCheck.map((value, index) => {
+    if(edit && value){
+      return <MultilineTextFields />
+    }
+  })
+  console.log(taskCheck);
   return (
     <div>
-      {edit ? <MultilineTextFields /> : null}
+      <div>
+        <AddCircleIcon onClick={addTaskHandler}/>
+        <h3>Add a task</h3>
+      </div>
+      
       <List className={classes.root}>
-      {[0, 1, 2, 3, 4].map(value => {
+      {taskCheck.map((value, key) => {
         const labelId = `checkbox-list-label-${value}`;
-
         return (
-          <ListItem key={value} role={undefined} dense button>
+          <ListItem key={key} role={undefined} dense button>
             <ListItemIcon>
               <Checkbox
                 edge="start"
-                checked={checked.indexOf(value) !== -1}
+                checked= {value}
                 tabIndex={-1}
                 disableRipple
                 inputProps={{ 'aria-labelledby': labelId }}
-                onClick={handleToggle(value)}
+                onClick={handleToggle(key)}
               />
             </ListItemIcon>
-            <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+            <ListItemText id={labelId} primary={`Line item ${value}`} />
             <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="comments" onClick={() => handleEdit(value)}>
+              <IconButton edge="end" aria-label="comments" >
                 <CommentIcon />
               </IconButton >
             </ListItemSecondaryAction>
