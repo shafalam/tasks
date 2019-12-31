@@ -22,10 +22,6 @@ interface MultilineTextFieldsProps{
 
 const MultilineTextFields: React.FunctionComponent<MultilineTextFieldsProps> = (props) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState('Controlled');
-
-  
-
 
   return (
     <form className={classes.root} noValidate autoComplete="off" style={{position: "absolute", zIndex: 2}} onSubmit={props.handleSubmit}>
