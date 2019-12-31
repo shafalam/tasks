@@ -6,8 +6,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       '& .MuiTextField-root': {
-        margin: theme.spacing(1),
-        width: 200 
+        margin: theme.spacing(0),
+        width: 200,
+        backgroundColor: theme.palette.background.default 
       },
     },
   }),
@@ -15,31 +16,31 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface MultilineTextFieldsProps{
   taskId?: number;
-  //handleChange(text: string):void;
+  handleChange(event: React.ChangeEvent<HTMLTextAreaElement>):void;
+  handleSubmit(event: React.FormEvent<HTMLFormElement>): void;
 }
 
-const MultilineTextFields: React.FunctionComponent<MultilineTextFieldsProps> = () => {
+const MultilineTextFields: React.FunctionComponent<MultilineTextFieldsProps> = (props) => {
   const classes = useStyles();
   const [value, setValue] = React.useState('Controlled');
 
-  const handleChange = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log(event.target);
-  };
+  
+
 
   return (
-    <form className={classes.root} noValidate autoComplete="off" style={{position: "absolute", zIndex: 2}} onSubmit={(event: React.FormEvent) => handleChange(event)}>
+    <form className={classes.root} noValidate autoComplete="off" style={{position: "absolute", zIndex: 2}} onSubmit={props.handleSubmit}>
       <div>
         <TextField
           id="filled-multiline-static"
-          label="Multiline"
+          label="Task"
           multiline
-          rows="4"
-          defaultValue="Default Value"
+          rows="5"
+          defaultValue=""
           variant="filled"
+          onChange={props.handleChange}
         />
-        <button type="submit">Add Task</button>
       </div>
+      <button type="submit">Add Task</button>   
     </form>
   );
 }

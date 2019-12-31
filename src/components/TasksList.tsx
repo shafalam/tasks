@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
-import TextField from '@material-ui/core/TextField';
+
 
 // icon import
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       width: '100%',
       maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: theme.palette.background.paper
     },
   }),
 );
@@ -44,7 +44,10 @@ export default function CheckboxList() {
 
   const handleEdit = (num: number) => {
     const initialEditStatus = edit[num];
-    console.log("each list is clicked" + edit + num);
+    const newEdit = [...edit];
+    newEdit[num] = !initialEditStatus;
+    setEdit(newEdit);
+    console.log("each list is clicked for edit" + edit + num);
   }
 
   const addTaskHandler = () => {
@@ -59,19 +62,34 @@ export default function CheckboxList() {
     setEdit(immutableEdit);
   }
 
-  const editText = taskCheck.map((value, index) => {
-    if(edit && value){
-      return <MultilineTextFields />
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
+    const newTask = event.currentTarget.value;
+    console.log(newTask);
+    const allTasks = [...task];
+    allTasks[index] = newTask;
+    setTask(allTasks);
+  }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>, index: number) => {
+    event.preventDefault();
+    handleEdit(index);
+  };
+
+  const editText = edit.map((value, index) => {
+    if(value){
+      return <MultilineTextFields handleChange={(event: React.ChangeEvent<HTMLTextAreaElement>)=>handleChange(event, index)} 
+      handleSubmit={(event: React.FormEvent<HTMLFormElement>) => handleSubmit(event,index)}/>
     }
   })
-  console.log(taskCheck);
+  console.log("task status" + taskCheck);
+  console.log("edit status" + edit);
   return (
     <div>
       <div>
         <AddCircleIcon onClick={addTaskHandler}/>
         <h3>Add a task</h3>
       </div>
-      
+      {editText}
       <List className={classes.root}>
       {taskCheck.map((value, key) => {
         const labelId = `checkbox-list-label-${value}`;
@@ -87,8 +105,8 @@ export default function CheckboxList() {
                 onClick={handleToggle(key)}
               />
             </ListItemIcon>
-            <ListItemText id={labelId} primary={`Line item ${value}`} />
-            <ListItemSecondaryAction>
+            <ListItemText id={labelId} primary={task[key]} />
+            <ListItemSecondaryAction onClick={() => handleEdit(key)}>
               <IconButton edge="end" aria-label="comments" >
                 <CommentIcon />
               </IconButton >
