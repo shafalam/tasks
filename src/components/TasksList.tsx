@@ -85,9 +85,9 @@ export default function CheckboxList() {
   console.log("edit status" + edit);
   return (
     <div>
-      <div>
+      <div style={{alignContent: "center", margin: "0.2px"}}>
         <AddCircleIcon onClick={addTaskHandler}/>
-        <h3>Add a task</h3>
+        <h3 style={{margin: "0px"}}>Add a task</h3>
       </div>
       {editText}
       <List className={classes.root}>
