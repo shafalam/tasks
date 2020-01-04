@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
-
+import Rating from '@material-ui/lab/Rating';
 
 // icon import
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -85,7 +85,7 @@ export default function CheckboxList() {
   console.log("edit status" + edit);
   return (
     <div>
-      <div style={{alignContent: "center", margin: "0.2px"}}>
+      <div style={{alignContent: "center", margin: "0.5%"}}>
         <AddCircleIcon onClick={addTaskHandler}/>
         <h3 style={{margin: "0px"}}>Add a task</h3>
       </div>
@@ -106,6 +106,7 @@ export default function CheckboxList() {
               />
             </ListItemIcon>
             <ListItemText id={labelId} primary={task[key]} />
+            <Rating name="simple-controlled" value={null} />
             <ListItemSecondaryAction onClick={() => handleEdit(key)}>
               <IconButton edge="end" aria-label="comments" >
                 <CommentIcon />
