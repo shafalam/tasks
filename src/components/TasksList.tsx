@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -26,7 +26,7 @@ const styles = (theme: Theme) =>
   });
 
 interface TaskProperty{
-  classes:any
+  classes: any
 }
 
 class Task extends React.Component<TaskProperty> {
@@ -75,7 +75,7 @@ class Task extends React.Component<TaskProperty> {
     newRating.push(rating);
 
     this.setState({taskCheck: immutableTask , edit: immutableEdit, rating: newRating });
-    console.log("task added");
+    console.log("task added. ");
   }
 
   handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
@@ -100,13 +100,16 @@ class Task extends React.Component<TaskProperty> {
  
   
   render(){
+    console.log("states are: ", this.state);
+
     const { classes } = this.props;
 
     const editText = this.state.edit.map((value, index) => {
       if(value){
-        return <MultilineTextFields handleChange={(event: React.ChangeEvent<HTMLTextAreaElement>)=>this.handleChange(event, index)} 
-        handleSubmit={(event: React.FormEvent<HTMLFormElement>) => this.handleSubmit(event,index)}/>
-      }
+        return (<MultilineTextFields handleChange={(event: React.ChangeEvent<HTMLTextAreaElement>)=>this.handleChange(event, index)} 
+        handleSubmit={(event: React.FormEvent<HTMLFormElement>) => this.handleSubmit(event,index)}/>)
+      } else
+         return null;
     });
     return (
       <div>
@@ -131,8 +134,13 @@ class Task extends React.Component<TaskProperty> {
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={this.state.task[key]} />
-              <Rating name="simple-controlled" value={this.state.rating[key]} 
-              onChange={(event: React.ChangeEvent<{}>, value:number|null)=> this.handleRating(value, key)} />
+              <ListItemIcon itemID={key+"rating"}>
+                  <Rating name={"simple-controlled"+key} value={this.state.rating[key]} 
+                  onChange={(event: React.ChangeEvent<{}>, value:number|null)=> {
+                    console.log("rating key: " + key);
+                    this.handleRating( value, key)}
+                  } />
+              </ListItemIcon>
               <ListItemSecondaryAction onClick={() => this.handleEdit(key)}>
                 <IconButton edge="end" aria-label="comments" >
                   <CommentIcon />
