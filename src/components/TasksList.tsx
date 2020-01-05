@@ -32,16 +32,18 @@ interface TaskProperty{
 class Task extends React.Component<TaskProperty> {
   
   aTask:string[] = [];
-  //const [task, setTask] = React.useState(aTask);
+  
   initialEdit: boolean[] = [];
-  //const [edit, setEdit] = React.useState(initialEdit);
+
   initialTask: boolean[] = [];
-  //const [taskCheck, setTaskCheck] = React.useState(initialTask);
+
+  aRating: (number| null)[] = [];
 
   state = {
     task: this.aTask,
     edit: this.initialEdit,
-    taskCheck: this.initialTask
+    taskCheck: this.initialTask,
+    rating: this.aRating
   }
 
   handleToggle = (index: number) => () => {
@@ -60,14 +62,20 @@ class Task extends React.Component<TaskProperty> {
   }
 
   addTaskHandler = () => {
-    console.log("task added");
+   
     const newTask: boolean = false;
     const immutableTask = [...this.state.taskCheck];
     immutableTask.push(newTask);
     const newEdit: boolean = false;
     const immutableEdit = [...this.state.edit];
     immutableEdit.push(newEdit);
-    this.setState({taskCheck: immutableTask , edit: immutableEdit });
+
+    const rating = 0;
+    const newRating = [...this.state.rating];
+    newRating.push(rating);
+
+    this.setState({taskCheck: immutableTask , edit: immutableEdit, rating: newRating });
+    console.log("task added");
   }
 
   handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
@@ -83,6 +91,12 @@ class Task extends React.Component<TaskProperty> {
     this.handleEdit(index);
   };
 
+  handleRating = (newValue: number|null, index: number)=> {
+    const newRating: (number | null)[] = [...this.state.rating];
+    newRating[index] = newValue;
+    console.log("index: " + index + " rating: " + newValue);
+    this.setState({rating: newRating});
+  }
  
   
   render(){
@@ -117,7 +131,8 @@ class Task extends React.Component<TaskProperty> {
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={this.state.task[key]} />
-              <Rating name="simple-controlled" value={null} />
+              <Rating name="simple-controlled" value={this.state.rating[key]} 
+              onChange={(event: React.ChangeEvent<{}>, value:number|null)=> this.handleRating(value, key)} />
               <ListItemSecondaryAction onClick={() => this.handleEdit(key)}>
                 <IconButton edge="end" aria-label="comments" >
                   <CommentIcon />
