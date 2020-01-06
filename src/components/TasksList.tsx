@@ -26,64 +26,76 @@ const styles = (theme: Theme) =>
   });
 
 interface TaskProperty{
+  check: boolean;
+  description: string;
+  rating: number|null;
+  edit: boolean;
+}
+
+interface TaskListProperty{
   classes: any
 }
 
-class Task extends React.Component<TaskProperty> {
+class TaskList extends React.Component<TaskListProperty> {
   
-  aTask:string[] = [];
+  // aTask:string[] = [];
   
-  initialEdit: boolean[] = [];
+  // initialEdit: boolean[] = [];
 
-  initialTask: boolean[] = [];
+  // initialTask: boolean[] = [];
 
-  aRating: (number| null)[] = [];
+  // aRating: (number| null)[] = [];
+
+  aTask: TaskProperty[] = [];
+
+  // state = {
+  //   task: this.aTask,
+  //   edit: this.initialEdit,
+  //   taskCheck: this.initialTask,
+  //   rating: this.aRating
+  // }
 
   state = {
-    task: this.aTask,
-    edit: this.initialEdit,
-    taskCheck: this.initialTask,
-    rating: this.aRating
+    task: this.aTask
   }
 
-  handleToggle = (index: number) => () => {
-    const editedTask = [...this.state.taskCheck];
-    const taskStatus = editedTask[index];
-    editedTask[index] = !taskStatus;
-    this.setState({taskCheck: editedTask});
+  handleCheck = (index: number) => () => {
+    const newTasks = [...this.state.task];
+    const taskCheck = newTasks[index].check;
+    newTasks[index].check = !taskCheck;
+    this.setState({task: newTasks});
   };
 
-  handleEdit = (num: number) => {
-    const initialEditStatus = this.state.edit[num];
-    const newEdit = [...this.state.edit];
-    newEdit[num] = !initialEditStatus;
-    this.setState({edit: newEdit});
-    console.log("each list is clicked for edit" + this.state.edit + num);
+  handleEdit = (index: number) => {
+    const initialEditStatus = this.state.task[index].edit;
+    const newTasks = [...this.state.task];
+    newTasks[index].edit = !initialEditStatus;
+    this.setState({task: newTasks});
+    console.log("each list is clicked for edit" + this.state.task[index].edit + index);
   }
 
   addTaskHandler = () => {
-   
-    const newTask: boolean = false;
-    const immutableTask = [...this.state.taskCheck];
-    immutableTask.push(newTask);
-    const newEdit: boolean = false;
-    const immutableEdit = [...this.state.edit];
-    immutableEdit.push(newEdit);
+    const aTask: TaskProperty = {
+      check: false,
+      description: "Good new task",
+      rating: null,
+      edit: false
+    };
 
-    const rating = 0;
-    const newRating = [...this.state.rating];
-    newRating.push(rating);
+    // copying the previous tasks
+    const newTasks = [...this.state.task];
+    newTasks.push(aTask);
 
-    this.setState({taskCheck: immutableTask , edit: immutableEdit, rating: newRating });
+    this.setState({task: newTasks});
     console.log("task added. ");
   }
 
   handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
-    const newTask = event.currentTarget.value;
-    console.log(newTask);
-    const allTasks = [...this.state.task];
-    allTasks[index] = newTask;
-    this.setState({task: allTasks});
+    const newTaskDescription = event.currentTarget.value;
+    console.log(newTaskDescription);
+    const newTasks = [...this.state.task];
+    newTasks[index].description = newTaskDescription;
+    this.setState({task: newTasks});
   }
 
   handleSubmit = (event: React.FormEvent<HTMLFormElement>, index: number) => {
@@ -92,20 +104,38 @@ class Task extends React.Component<TaskProperty> {
   };
 
   handleRating = (newValue: number|null, index: number)=> {
-    const newRating: (number | null)[] = [...this.state.rating];
-    newRating[index] = newValue;
+    const newTasks: TaskProperty[] = [...this.state.task];
+    newTasks[index].rating = newValue;
+    newTasks.sort((a, b) => {
+      if((a.rating != null) && (b.rating != null)){
+        return b.rating - a.rating;
+      }else{
+        return 0;
+      }
+    });
     console.log("index: " + index + " rating: " + newValue);
-    this.setState({rating: newRating});
+    this.setState({task: newTasks});
   }
  
+  // orderTasks = () => {
+  //   const newTasks = [...this.state.task];
+  //   newTasks.sort((a, b) => {
+  //     if(a.rating != null || b.rating != null){
+  //       return b.rating - a.rating;
+  //     }else{
+  //       return 0;
+  //     }
+  //   });
+
+  //   this.setState({task: newTasks});
+  // }
   
   render(){
     console.log("states are: ", this.state);
 
     const { classes } = this.props;
-
-    const editText = this.state.edit.map((value, index) => {
-      if(value){
+    const editText = this.state.task.map((value, index) => {
+      if(value.edit){
         return (<MultilineTextFields handleChange={(event: React.ChangeEvent<HTMLTextAreaElement>)=>this.handleChange(event, index)} 
         handleSubmit={(event: React.FormEvent<HTMLFormElement>) => this.handleSubmit(event,index)}/>)
       } else
@@ -119,26 +149,26 @@ class Task extends React.Component<TaskProperty> {
         </div>
         {editText}
         <List className={classes.root}>
-        {this.state.taskCheck.map((value, key) => {
+        {this.state.task.map((value, key) => {
           const labelId = `checkbox-list-label-${value}`;
           return (
             <ListItem key={key} role={undefined} dense button>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
-                  checked= {value}
+                  checked= {value.check}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}
-                  onClick={this.handleToggle(key)}
+                  onClick={this.handleCheck(key)}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={this.state.task[key]} />
+              <ListItemText disableTypography style={value.check?{textDecoration: "line-through"}: undefined} id={labelId} primary={value.description} />
               <ListItemIcon itemID={key+"rating"}>
-                  <Rating name={"simple-controlled"+key} value={this.state.rating[key]} 
-                  onChange={(event: React.ChangeEvent<{}>, value:number|null)=> {
+                  <Rating name={"simple-controlled"+key} value={value.rating} 
+                  onChange={(event: React.ChangeEvent<{}>, newValue:number|null)=> {
                     console.log("rating key: " + key);
-                    this.handleRating( value, key)}
+                    this.handleRating( newValue, key)}
                   } />
               </ListItemIcon>
               <ListItemSecondaryAction onClick={() => this.handleEdit(key)}>
@@ -155,4 +185,4 @@ class Task extends React.Component<TaskProperty> {
   }
 }
 
-export default withStyles(styles, {withTheme: true})(Task);
+export default withStyles(styles, {withTheme: true})(TaskList);
