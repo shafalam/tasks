@@ -37,23 +37,8 @@ interface TaskListProperty{
 }
 
 class TaskList extends React.Component<TaskListProperty> {
-  
-  // aTask:string[] = [];
-  
-  // initialEdit: boolean[] = [];
-
-  // initialTask: boolean[] = [];
-
-  // aRating: (number| null)[] = [];
 
   aTask: TaskProperty[] = [];
-
-  // state = {
-  //   task: this.aTask,
-  //   edit: this.initialEdit,
-  //   taskCheck: this.initialTask,
-  //   rating: this.aRating
-  // }
 
   state = {
     task: this.aTask
@@ -106,6 +91,8 @@ class TaskList extends React.Component<TaskListProperty> {
   handleRating = (newValue: number|null, index: number)=> {
     const newTasks: TaskProperty[] = [...this.state.task];
     newTasks[index].rating = newValue;
+    
+    // when a rating is given it sorts the tasks
     newTasks.sort((a, b) => {
       if((a.rating != null) && (b.rating != null)){
         return b.rating - a.rating;
@@ -117,23 +104,13 @@ class TaskList extends React.Component<TaskListProperty> {
     this.setState({task: newTasks});
   }
  
-  // orderTasks = () => {
-  //   const newTasks = [...this.state.task];
-  //   newTasks.sort((a, b) => {
-  //     if(a.rating != null || b.rating != null){
-  //       return b.rating - a.rating;
-  //     }else{
-  //       return 0;
-  //     }
-  //   });
-
-  //   this.setState({task: newTasks});
-  // }
   
   render(){
     console.log("states are: ", this.state);
 
     const { classes } = this.props;
+
+    // TextArea for adding tasks
     const editText = this.state.task.map((value, index) => {
       if(value.edit){
         return (<MultilineTextFields handleChange={(event: React.ChangeEvent<HTMLTextAreaElement>)=>this.handleChange(event, index)} 
@@ -141,6 +118,7 @@ class TaskList extends React.Component<TaskListProperty> {
       } else
          return null;
     });
+
     return (
       <div>
         <div style={{alignContent: "center", margin: "0.5%"}}>
@@ -185,4 +163,5 @@ class TaskList extends React.Component<TaskListProperty> {
   }
 }
 
+// "TaskList" is wrapped with "withStyles", so that "styles" is applied at this component
 export default withStyles(styles, {withTheme: true})(TaskList);
