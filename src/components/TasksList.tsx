@@ -20,7 +20,7 @@ const styles = (theme: Theme) =>
 ({
     root: {
       width: '100%',
-      maxWidth: 360,
+      maxWidth: '360',
       backgroundColor: theme.palette.background.paper
     }
   });
@@ -143,7 +143,7 @@ class TaskList extends React.Component<TaskListProperty> {
               </ListItemIcon>
               <ListItemText disableTypography style={value.check?{textDecoration: "line-through"}: undefined} id={labelId} primary={value.description} />
               <ListItemIcon itemID={key+"rating"}>
-                  <Rating name={"simple-controlled"+key} value={value.rating} 
+                  <Rating name={"simple-controlled"+key} value={value.rating} max={3}
                   onChange={(event: React.ChangeEvent<{}>, newValue:number|null)=> {
                     console.log("rating key: " + key);
                     this.handleRating( newValue, key)}
