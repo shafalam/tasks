@@ -5,6 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CommentIcon from '@material-ui/icons/Comment';
@@ -33,6 +34,7 @@ interface TaskProperty {
   date?: Date;
 }
 
+// for styles
 interface TaskListProperty {
   classes: any
 }
@@ -48,26 +50,26 @@ class TaskList extends React.Component<TaskListProperty> {
   }
 
   handleCheck = (index: number) => () => {
-    const newTasks = [...this.state.completedTask];
+    const newTasks = [...this.state.inCompletedTask];
     const thatTask = newTasks[index];
     const taskCheck = newTasks[index].check;
     thatTask.check = !taskCheck;
     thatTask.date = new Date();
     console.log("utc day " + thatTask.date.getUTCDate());
     //newTasks[index].check = !taskCheck;
-    const inCompletedTask = [...this.state.inCompletedTask];
+    const completedTask = [...this.state.completedTask];
 
-    inCompletedTask.push(thatTask);
+    completedTask.push(thatTask);
     newTasks.splice(index, 1);
-    this.setState({ completedTask: newTasks, inCompletedTask: inCompletedTask });
+    this.setState({ inCompletedTask: newTasks, completedTask: completedTask });
   };
 
   handleEdit = (index: number) => {
-    const initialEditStatus = this.state.completedTask[index].edit;
-    const newTasks = [...this.state.completedTask];
+    const initialEditStatus = this.state.inCompletedTask[index].edit;
+    const newTasks = [...this.state.inCompletedTask];
     newTasks[index].edit = !initialEditStatus;
-    this.setState({ completedTask: newTasks });
-    console.log("each list is clicked for edit" + this.state.completedTask[index].edit + index);
+    this.setState({ inCompletedTask: newTasks });
+    console.log("each list is clicked for edit" + this.state.inCompletedTask[index].edit + index);
   }
 
   addTaskHandler = () => {
@@ -79,19 +81,19 @@ class TaskList extends React.Component<TaskListProperty> {
     };
 
     // copying the previous tasks
-    const newTasks = [...this.state.completedTask];
+    const newTasks = [...this.state.inCompletedTask];
     newTasks.push(aTask);
 
-    this.setState({ completedTask: newTasks });
+    this.setState({ inCompletedTask: newTasks });
     console.log("task added. ");
   }
 
   handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
     const newTaskDescription = event.currentTarget.value;
     console.log(newTaskDescription);
-    const newTasks = [...this.state.completedTask];
+    const newTasks = [...this.state.inCompletedTask];
     newTasks[index].description = newTaskDescription;
-    this.setState({ completedTask: newTasks });
+    this.setState({ inCompletedTask: newTasks });
   }
 
   handleSubmit = (event: React.FormEvent<HTMLFormElement>, index: number) => {
@@ -100,7 +102,7 @@ class TaskList extends React.Component<TaskListProperty> {
   };
 
   handleRating = (newValue: number | null, index: number) => {
-    const newTasks: TaskProperty[] = [...this.state.completedTask];
+    const newTasks: TaskProperty[] = [...this.state.inCompletedTask];
     newTasks[index].rating = newValue;
 
     // when a rating is given it sorts the tasks
@@ -112,7 +114,7 @@ class TaskList extends React.Component<TaskListProperty> {
       }
     });
     console.log("index: " + index + " rating: " + newValue);
-    this.setState({ completedTask: newTasks });
+    this.setState({ inCompletedTask: newTasks });
   }
 
 
@@ -122,7 +124,7 @@ class TaskList extends React.Component<TaskListProperty> {
     const { classes } = this.props;
 
     // TextArea for adding tasks
-    const editText = this.state.completedTask.map((value, index) => {
+    const editText = this.state.inCompletedTask.map((value, index) => {
       if (value.edit) {
         return (<MultilineTextFields handleChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => this.handleChange(event, index)}
           handleSubmit={(event: React.FormEvent<HTMLFormElement>) => this.handleSubmit(event, index)} />)
@@ -138,8 +140,12 @@ class TaskList extends React.Component<TaskListProperty> {
         </div>
         <div style={{ display: "flex" }}>
           {editText}
-          <List className={classes.root}>
-            {this.state.completedTask.map((value, key) => {
+          <List className={classes.root} subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              New Tasks
+        </ListSubheader>
+          }>
+            {this.state.inCompletedTask.map((value, key) => {
               const labelId = `checkbox-list-label-${value}`;
               return (
                 <ListItem key={key} role={undefined} dense button>
@@ -171,14 +177,19 @@ class TaskList extends React.Component<TaskListProperty> {
               );
             })}
           </List>
-          <List className={classes.root}>
-            {this.state.inCompletedTask.map((value, index) => {
+          <List className={classes.root} subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              Completed Tasks
+           </ListSubheader>
+          }>
+            {this.state.completedTask.map((value, index) => {
               const labelId = `checkbox-list-label-${value}`;
               return (
                 <ListItem key={index} role={undefined} dense button>
                   <ListItemText disableTypography style={value.check ? { textDecoration: "line-through" } : undefined}
                     id={labelId} primary={value.description} />
-                  <p>{value.date?.toUTCString()}</p>
+                  <ListItemText primary={value.date?.toUTCString()} />
+                  {/* <p>{value.date?.toUTCString()}</p> */}
                 </ListItem>
 
               );
